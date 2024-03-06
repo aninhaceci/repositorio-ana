@@ -3,6 +3,7 @@ package com.example.demo.ifpr.controller;
 import com.example.demo.ifpr.model.Usuario;
 import com.example.demo.ifpr.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class UsuarioControle {
     public @ResponseBody String addNewUser(@RequestParam String nome,
                                            @RequestParam String email,
                                            @RequestParam String senha,
-                                           @RequestParam Date dataNascimento){
+                                           @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date dataNascimento){
         Usuario usuario = new Usuario();
         usuario.setNome(nome);
         usuario.setEmail(email);
@@ -54,5 +55,13 @@ public class UsuarioControle {
     @GetMapping(path="/{id}")
     public @ResponseBody Optional<Usuario> getUsuario(@PathVariable String id){
         return usuarioRepository.findById(Long.parseLong(id));
+    }
+
+    @GetMapping(path="/nascidos")
+    public @ResponseBody Usuario usuariosNascidos(
+            @RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date dataNascimento
+    ){
+        Usuario nasceram = usuarioRepository.findByStartDateBetween(dataNascimento);
+        return nasceram;
     }
 }
